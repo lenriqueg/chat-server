@@ -6,8 +6,12 @@ const io = require('socket.io')(http);
 app.use(express.static('public'))
 
 app.use(function(req, res, next) {
-    res.status(404).sendFile(__dirname + '/index.html');;
+    res.status(404).sendFile(__dirname + '/index.html');
 });
+
+app.get('/', () => {
+    res.sendFile(__dirname + '/index.html');;
+})
 
 io.on('connection', (socket) => {
     
