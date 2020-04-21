@@ -3,15 +3,11 @@ const app = express();
 const http = require('http').createServer(app);
 const io = require('socket.io')(http);
 
-app.use(express.static('public'))
+app.use(express.static('./public'))
 
-app.use(function(req, res, next) {
+app.use((req, res, next) =>  {
     res.status(404).sendFile(__dirname + '/index.html');
 });
-
-app.get('/', () => {
-    res.sendFile(__dirname + '/index.html');;
-})
 
 io.on('connection', (socket) => {
     
@@ -39,6 +35,8 @@ io.on('connection', (socket) => {
     })
 });
 
-http.listen(3000, () => {
-    console.log('listening on *:3000');
+const port = process.env.PORT || 3000;
+
+http.listen(port, () => {
+    console.log('listening on *:' + port);
 });
