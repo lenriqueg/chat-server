@@ -2,11 +2,31 @@ const express = require('express');
 const app = express();
 const http = require('http').createServer(app);
 const io = require('socket.io')(http);
+require('dotenv').config();
+
+let domain = process.env.DOMAIN_SERVER
+
+if (JSON.parse(process.env.DEBUG)) {
+
+    domain = process.env.DOMAIN_TEST
+}
 
 app.use(express.static('./public'))
 
 app.use((req, res, next) =>  {
     res.status(404).sendFile(__dirname + '/index.html');
+});
+
+io.origins((origin, callback) => {
+
+    console.log(domain)
+    
+    if (origin !== domain) {
+        
+        return callback('origin not allowed', false);
+    }
+
+    callback(null, true);
 });
 
 io.on('connection', (socket) => {
@@ -24,7 +44,7 @@ io.on('connection', (socket) => {
     /**
      * Canal para el cliente
      */
-    socket.on('send_to_channel', ({ room, event }) => {
+    socket.on('send_to_room', ({ room, event }) => {
 
         if (!room) { return; }
 
